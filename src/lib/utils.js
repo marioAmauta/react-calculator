@@ -1,40 +1,34 @@
-export function evaluate({ currentOperand, previousOperand, operation }) {
-  const previous = parseFloat(previousOperand)
-  const current = parseFloat(currentOperand)
+import Mexp from 'math-expression-evaluator'
+import { CALCULATOR_CHARACTERS } from './constants'
 
-  if (isNaN(previous) || isNaN(current)) {
-    return ''
-  }
+export function evaluate(expression) {
+  const mexp = new Mexp()
 
-  let computation = ''
+  const newValue = Object.values(expression)
+    .map(value => {
+      if (value === CALCULATOR_CHARACTERS.DIVIDE.CHARACTER) {
+        return '/'
+      }
 
-  switch (operation) {
-    case '+':
-      computation = previous + current
-      break
-    case '-':
-      computation = previous - current
-      break
-    case '*':
-      computation = previous * current
-      break
+      if (value === CALCULATOR_CHARACTERS.MULTIPLY.CHARACTER) {
+        return '*'
+      }
 
-    case '÷':
-      computation = previous / current
-      break
-  }
+      return value
+    })
+    .join('')
 
-  return computation.toString()
+  return mexp.eval(newValue).toString()
 }
-
-const INTEGER_FORMATTER = new Intl.NumberFormat('en-US', {
-  maximumFractionDigits: 0
-})
 
 export function formatOperand(operand) {
   if (operand == null) {
     return
   }
+
+  const INTEGER_FORMATTER = new Intl.NumberFormat('en-US', {
+    maximumFractionDigits: 0
+  })
 
   const [integer, decimal] = operand.split('.')
 

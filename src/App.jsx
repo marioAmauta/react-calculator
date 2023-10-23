@@ -1,110 +1,39 @@
 import { useReducer } from 'react'
-import { DigitButton } from './components/DigitButton'
-import { OperationButton } from './components/OperationButton'
-import { reducer } from './lib/calculator-reducer'
-import { ACTIONS } from './lib/constants'
-import { formatOperand } from './lib/utils'
+import { ACTIONS, initialState, reducer } from './lib/reducer'
+import { CALCULATOR_CHARACTERS } from './lib/constants'
+import { Display } from './components/Display'
+import { Button } from './components/Button'
 
 export default function App() {
-  const [{ currentOperand, previousOperand, operation }, dispatch] = useReducer(reducer, {})
+  const [state, dispatch] = useReducer(reducer, initialState)
+
+  console.log(state)
 
   return (
     <div className='calculator-grid'>
-      <div className='output'>
-        <div className='previous-operand'>
-          {formatOperand(previousOperand)} {operation}
-        </div>
-        <div className='current-operand'>{formatOperand(currentOperand)}</div>
-      </div>
-      <button
-        className='span-two'
-        onClick={() =>
-          dispatch({
-            type: ACTIONS.CLEAR
-          })
-        }
-      >
-        AC
-      </button>
-      <button
-        onClick={() =>
-          dispatch({
-            type: ACTIONS.DELETE_DIGIT
-          })
-        }
-      >
-        DEL
-      </button>
-      <OperationButton
-        operation='÷'
-        dispatch={dispatch}
+      <Display
+        formula={state.formula}
+        currentCharacter={state.currentCharacter}
       />
-      <DigitButton
-        digit='1'
-        dispatch={dispatch}
-      />
-      <DigitButton
-        digit='2'
-        dispatch={dispatch}
-      />
-      <DigitButton
-        digit='3'
-        dispatch={dispatch}
-      />
-      <OperationButton
-        operation='*'
-        dispatch={dispatch}
-      />
-      <DigitButton
-        digit='4'
-        dispatch={dispatch}
-      />
-      <DigitButton
-        digit='5'
-        dispatch={dispatch}
-      />
-      <DigitButton
-        digit='6'
-        dispatch={dispatch}
-      />
-      <OperationButton
-        operation='+'
-        dispatch={dispatch}
-      />
-      <DigitButton
-        digit='7'
-        dispatch={dispatch}
-      />
-      <DigitButton
-        digit='8'
-        dispatch={dispatch}
-      />
-      <DigitButton
-        digit='9'
-        dispatch={dispatch}
-      />
-      <OperationButton
-        operation='-'
-        dispatch={dispatch}
-      />
-      <DigitButton
-        digit='.'
-        dispatch={dispatch}
-      />
-      <DigitButton
-        digit='0'
-        dispatch={dispatch}
-      />
-      <button
-        className='span-two'
-        onClick={() =>
-          dispatch({
-            type: ACTIONS.EVALUATE
-          })
-        }
-      >
-        =
-      </button>
+      {Object.values(CALCULATOR_CHARACTERS).map(({ ID, CHARACTER }) => (
+        <Button
+          key={ID}
+          id={ID}
+          label={CHARACTER}
+          customClass={
+            ID === CALCULATOR_CHARACTERS.CLEAR.ID || ID === CALCULATOR_CHARACTERS.EQUALS.ID ? 'span-two' : ''
+          }
+          onClick={
+            ID === CALCULATOR_CHARACTERS.CLEAR.ID
+              ? () => dispatch({ type: ACTIONS.CLEAR })
+              : ID === CALCULATOR_CHARACTERS.DELETE.ID
+              ? () => dispatch({ type: ACTIONS.DELETE_DIGIT })
+              : ID === CALCULATOR_CHARACTERS.EQUALS.ID
+              ? () => dispatch({ type: ACTIONS.EVALUATE })
+              : () => dispatch({ type: ACTIONS.ADD_CHARACTER, payload: { character: CHARACTER } })
+          }
+        />
+      ))}
     </div>
   )
 }
