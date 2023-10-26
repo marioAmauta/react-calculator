@@ -1,3 +1,4 @@
+import { CALCULATOR_CHARACTERS } from './constants'
 import { evaluate } from './utils'
 
 export const ACTIONS = {
@@ -11,66 +12,72 @@ export const ACTIONS = {
 export const initialState = {
   overwrite: false,
   formula: '',
-  currentCharacter: '0',
-  result: ''
+  output: '',
+  lastResult: ''
 }
 
 export function reducer(state, { type, payload }) {
   switch (type) {
     case ACTIONS.ADD_CHARACTER: {
+      if (
+        state.lastResult &&
+        isNaN(payload.character) &&
+        payload.character !== CALCULATOR_CHARACTERS.DECIMAL.CHARACTER
+      ) {
+        return {
+          ...state,
+          overwrite: false,
+          formula: state.lastResult.concat(payload.character),
+          output: payload.character
+        }
+      }
+
       if (state.overwrite) {
         return {
           ...state,
           overwrite: false,
-          formula: state.formula.concat(payload.character),
-          currentCharacter: payload.character
-        }
-      }
-
-      if (payload.character === '0' && state.formula === '0' && state.currentCharacter === '0') {
-        return state
-      }
-
-      if (!isNaN(payload.character) && state.formula === '0' && state.currentCharacter === '0') {
-        return {
-          ...state,
           formula: payload.character,
-          currentCharacter: payload.character
+          output: payload.character
         }
       }
 
-      if (payload.character === '.' && state.formula.at(-1) === '.') {
+      if (
+        (payload.character === CALCULATOR_CHARACTERS.ZERO.CHARACTER &&
+          state.formula === CALCULATOR_CHARACTERS.ZERO.CHARACTER &&
+          state.output === CALCULATOR_CHARACTERS.ZERO.CHARACTER) ||
+        (payload.character === CALCULATOR_CHARACTERS.DECIMAL.CHARACTER &&
+          state.output.includes(CALCULATOR_CHARACTERS.DECIMAL.CHARACTER))
+      ) {
         return state
       }
 
-      if (payload.character === '.' && isNaN(Number(state.formula.at(-1))) && state.currentCharacter !== '.') {
+      if (
+        payload.character === CALCULATOR_CHARACTERS.DECIMAL.CHARACTER &&
+        isNaN(state.formula.at(-1)) &&
+        isNaN(state.output.at(-1))
+      ) {
         return {
           ...state,
           formula: state.formula.concat('0.'),
-          currentCharacter: payload.character
+          output: state.formula.concat('0.')
         }
       }
 
-      if (payload.character === '.' && state.formula === '' && state.currentCharacter === '0') {
+      if (
+        (isNaN(payload.character) && payload.character !== CALCULATOR_CHARACTERS.DECIMAL.CHARACTER) ||
+        (isNaN(state.output.at(0)) && !isNaN(payload.character))
+      ) {
         return {
           ...state,
-          formula: '0.',
-          currentCharacter: payload.character
-        }
-      }
-
-      if (payload.character === '.' && state.formula !== '' && state.currentCharacter === '0') {
-        return {
-          ...state,
-          formula: state.formula.concat('.'),
-          currentCharacter: payload.character
+          formula: state.formula.concat(payload.character),
+          output: payload.character
         }
       }
 
       return {
         ...state,
         formula: state.formula.concat(payload.character),
-        currentCharacter: payload.character
+        output: state.output.concat(payload.character)
       }
     }
 
@@ -79,38 +86,90 @@ export function reducer(state, { type, payload }) {
         return {
           ...state,
           overwrite: false,
-          formula: ''
+          formula: '',
+          output: '0'
         }
       }
 
-      if (!state.currentOperand) return state
-
-      if (state.currentOperand.length === 1) {
-        return { ...state, currentOperand: '' }
+      if (!state.formula) {
+        return {
+          ...state,
+          output: '0'
+        }
       }
 
       return {
         ...state,
-        currentOperand: state.currentOperand.slice(0, -1)
+        formula: state.formula.slice(0, -1)
       }
-    }
-
-    case ACTIONS.CLEAR: {
-      return initialState
     }
 
     case ACTIONS.EVALUATE: {
-      if (!state.formula || state.formula === '0') {
+      if (
+        !state.formula ||
+        !state.formula.match(/\d/) ||
+        (isNaN(Number(state.formula.at(0))) && isNaN(Number(state.formula.at(1)))) ||
+        (isNaN(Number(state.formula.at(-2))) && isNaN(Number(state.formula.at(-1))))
+      ) {
         return state
       }
+
+      let newFormula = ''
+      let result = ''
+      let isRepeatedOperatorRemoved = false
+      let repeatedOperators = ''
+
+      for (let i = 0; i < state.formula.length; i++) {
+        if (
+          isNaN(state.formula[i]) &&
+          isNaN(state.formula[i + 1]) &&
+          state.formula[i + 1] !== CALCULATOR_CHARACTERS.DECIMAL.CHARACTER &&
+          state.formula[i + 1] !== CALCULATOR_CHARACTERS.SUBTRACT.CHARACTER
+        ) {
+          newFormula = state.formula.slice(0, i).concat(state.formula.slice(i + 1))
+
+          const formattedFormula = newFormula
+            .split('')
+            .map(el => {
+              if (isNaN(el)) {
+                repeatedOperators = repeatedOperators.concat(el)
+
+                if (!isRepeatedOperatorRemoved) {
+                  isRepeatedOperatorRemoved = true
+
+                  return ''
+                }
+              }
+
+              return el
+            })
+            .join('')
+
+          result = evaluate(repeatedOperators.length > 1 ? formattedFormula : newFormula)
+
+          return {
+            ...state,
+            overwrite: true,
+            formula: '',
+            output: result,
+            lastResult: result
+          }
+        }
+      }
+
+      result = evaluate(state.formula)
 
       return {
         ...state,
         overwrite: true,
         formula: '',
-        result: evaluate(state.formula),
-        currentCharacter: evaluate(state.formula)
+        output: result,
+        lastResult: result
       }
+    }
+
+    case ACTIONS.CLEAR: {
+      return initialState
     }
   }
 }

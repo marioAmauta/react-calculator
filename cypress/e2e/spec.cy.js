@@ -98,4 +98,68 @@ describe('Calculator tests', () => {
     cy.get(`#${CALCULATOR_CHARACTERS.DECIMAL.ID}`).click()
     cy.get(`#${ELEMENT_IDS.DISPLAY}`).should('have.text', '4..')
   })
+
+  it('#12 I should be able to perform any operation (+, -, *, /) on numbers containing decimal points', () => {
+    // 4.5 + 4.5 = 9
+    cy.get(`#${CALCULATOR_CHARACTERS.FOUR.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.DECIMAL.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.FIVE.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.ADD.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.FOUR.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.DECIMAL.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.FIVE.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.EQUALS.ID}`).click()
+    cy.get(`#${ELEMENT_IDS.DISPLAY}`).should('have.text', '9')
+
+    // 0.8 - 0.3 = 0.5
+    cy.get(`#${CALCULATOR_CHARACTERS.DECIMAL.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.EIGHT.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.SUBTRACT.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.DECIMAL.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.THREE.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.EQUALS.ID}`).click()
+    cy.get(`#${ELEMENT_IDS.DISPLAY}`).should('have.text', '0.5')
+
+    // 7.6 * 2.9 = 22.04
+    cy.get(`#${CALCULATOR_CHARACTERS.SEVEN.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.DECIMAL.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.SIX.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.MULTIPLY.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.TWO.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.DECIMAL.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.NINE.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.EQUALS.ID}`).click()
+    cy.get(`#${ELEMENT_IDS.DISPLAY}`).should('have.text', '22.04')
+
+    // 10.5 / 3.34 = 3.1437125748503
+    cy.get(`#${CALCULATOR_CHARACTERS.ONE.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.ZERO.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.DECIMAL.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.FIVE.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.DIVIDE.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.THREE.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.DECIMAL.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.THREE.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.FOUR.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.EQUALS.ID}`).click()
+    cy.get(`#${ELEMENT_IDS.DISPLAY}`).should('have.text', '3.1437125748503')
+  })
+
+  it('#13 If 2 or more operators are entered consecutively, the operation performed should be the last operator entered (excluding the negative (-) sign). For example, if 5 + * 7 = is entered, the result should be 35 (i.e. 5 * 7); if 5 * - 5 = is entered, the result should be -25 (i.e. 5 * (-5))', () => {
+    // 5 + * 7 = 35
+    cy.get(`#${CALCULATOR_CHARACTERS.FIVE.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.ADD.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.MULTIPLY.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.SEVEN.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.EQUALS.ID}`).click()
+    cy.get(`#${ELEMENT_IDS.DISPLAY}`).should('have.text', '35')
+
+    // 5 * - 5 = -25
+    cy.get(`#${CALCULATOR_CHARACTERS.FIVE.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.MULTIPLY.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.SUBTRACT.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.FIVE.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.EQUALS.ID}`).click()
+    cy.get(`#${ELEMENT_IDS.DISPLAY}`).should('have.text', '-25')
+  })
 })

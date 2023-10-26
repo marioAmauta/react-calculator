@@ -7,13 +7,11 @@ import { Button } from './components/Button'
 export default function App() {
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  console.log(state)
-
   return (
     <div className='calculator-grid'>
       <Display
         formula={state.formula}
-        currentCharacter={state.currentCharacter}
+        output={state.output ? state.output : '0'}
       />
       {Object.values(CALCULATOR_CHARACTERS).map(({ ID, CHARACTER }) => (
         <Button
