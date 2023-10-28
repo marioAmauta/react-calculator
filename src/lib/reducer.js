@@ -20,6 +20,16 @@ export function reducer(state, { type, payload }) {
   switch (type) {
     case ACTIONS.ADD_CHARACTER: {
       if (
+        (payload.character === CALCULATOR_CHARACTERS.ZERO.CHARACTER &&
+          state.formula === CALCULATOR_CHARACTERS.ZERO.CHARACTER &&
+          state.output === CALCULATOR_CHARACTERS.ZERO.CHARACTER) ||
+        (payload.character === CALCULATOR_CHARACTERS.DECIMAL.CHARACTER &&
+          state.output.includes(CALCULATOR_CHARACTERS.DECIMAL.CHARACTER))
+      ) {
+        return state
+      }
+
+      if (
         state.lastResult &&
         isNaN(payload.character) &&
         payload.character !== CALCULATOR_CHARACTERS.DECIMAL.CHARACTER
@@ -32,7 +42,12 @@ export function reducer(state, { type, payload }) {
         }
       }
 
-      if (state.overwrite) {
+      if (
+        state.overwrite ||
+        (state.output.startsWith(CALCULATOR_CHARACTERS.ZERO.CHARACTER) &&
+          state.output[1] !== CALCULATOR_CHARACTERS.DECIMAL.CHARACTER &&
+          payload.character !== CALCULATOR_CHARACTERS.DECIMAL.CHARACTER)
+      ) {
         return {
           ...state,
           overwrite: false,
@@ -42,19 +57,9 @@ export function reducer(state, { type, payload }) {
       }
 
       if (
-        (payload.character === CALCULATOR_CHARACTERS.ZERO.CHARACTER &&
-          state.formula === CALCULATOR_CHARACTERS.ZERO.CHARACTER &&
-          state.output === CALCULATOR_CHARACTERS.ZERO.CHARACTER) ||
-        (payload.character === CALCULATOR_CHARACTERS.DECIMAL.CHARACTER &&
-          state.output.includes(CALCULATOR_CHARACTERS.DECIMAL.CHARACTER))
-      ) {
-        return state
-      }
-
-      if (
         payload.character === CALCULATOR_CHARACTERS.DECIMAL.CHARACTER &&
-        isNaN(state.formula.at(-1)) &&
-        isNaN(state.output.at(-1))
+        isNaN(state.formula.at(0)) &&
+        state.formula.at(0) !== CALCULATOR_CHARACTERS.ZERO.CHARACTER
       ) {
         return {
           ...state,

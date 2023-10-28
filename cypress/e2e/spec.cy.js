@@ -88,7 +88,7 @@ describe('Calculator tests', () => {
     cy.get(`#${CALCULATOR_CHARACTERS.ZERO.ID}`).click()
     cy.get(`#${CALCULATOR_CHARACTERS.ZERO.ID}`).click()
     cy.get(`#${CALCULATOR_CHARACTERS.ONE.ID}`).click()
-    cy.get(`#${ELEMENT_IDS.DISPLAY}`).should('have.text', '11')
+    cy.get(`#${ELEMENT_IDS.DISPLAY}`).should('have.text', CALCULATOR_CHARACTERS.ONE.CHARACTER)
   })
 
   it('#11 When the decimal element is clicked, a . should append to the currently displayed value; two . in one number should not be accepted', () => {
@@ -96,7 +96,10 @@ describe('Calculator tests', () => {
     cy.get(`#${CALCULATOR_CHARACTERS.DECIMAL.ID}`).click()
     cy.get(`#${CALCULATOR_CHARACTERS.DECIMAL.ID}`).click()
     cy.get(`#${CALCULATOR_CHARACTERS.DECIMAL.ID}`).click()
-    cy.get(`#${ELEMENT_IDS.DISPLAY}`).should('have.text', '4..')
+    cy.get(`#${ELEMENT_IDS.DISPLAY}`).should(
+      'have.text',
+      `${CALCULATOR_CHARACTERS.FOUR.CHARACTER}${CALCULATOR_CHARACTERS.DECIMAL.CHARACTER}`
+    )
   })
 
   it('#12 I should be able to perform any operation (+, -, *, /) on numbers containing decimal points', () => {
@@ -110,15 +113,19 @@ describe('Calculator tests', () => {
     cy.get(`#${CALCULATOR_CHARACTERS.FIVE.ID}`).click()
     cy.get(`#${CALCULATOR_CHARACTERS.EQUALS.ID}`).click()
     cy.get(`#${ELEMENT_IDS.DISPLAY}`).should('have.text', '9')
+    cy.get(`#${CALCULATOR_CHARACTERS.CLEAR.ID}`).click()
 
     // 0.8 - 0.3 = 0.5
+    cy.get(`#${CALCULATOR_CHARACTERS.ZERO.ID}`).click()
     cy.get(`#${CALCULATOR_CHARACTERS.DECIMAL.ID}`).click()
     cy.get(`#${CALCULATOR_CHARACTERS.EIGHT.ID}`).click()
     cy.get(`#${CALCULATOR_CHARACTERS.SUBTRACT.ID}`).click()
+    cy.get(`#${CALCULATOR_CHARACTERS.ZERO.ID}`).click()
     cy.get(`#${CALCULATOR_CHARACTERS.DECIMAL.ID}`).click()
     cy.get(`#${CALCULATOR_CHARACTERS.THREE.ID}`).click()
     cy.get(`#${CALCULATOR_CHARACTERS.EQUALS.ID}`).click()
     cy.get(`#${ELEMENT_IDS.DISPLAY}`).should('have.text', '0.5')
+    cy.get(`#${CALCULATOR_CHARACTERS.CLEAR.ID}`).click()
 
     // 7.6 * 2.9 = 22.04
     cy.get(`#${CALCULATOR_CHARACTERS.SEVEN.ID}`).click()
@@ -130,6 +137,7 @@ describe('Calculator tests', () => {
     cy.get(`#${CALCULATOR_CHARACTERS.NINE.ID}`).click()
     cy.get(`#${CALCULATOR_CHARACTERS.EQUALS.ID}`).click()
     cy.get(`#${ELEMENT_IDS.DISPLAY}`).should('have.text', '22.04')
+    cy.get(`#${CALCULATOR_CHARACTERS.CLEAR.ID}`).click()
 
     // 10.5 / 3.34 = 3.1437125748503
     cy.get(`#${CALCULATOR_CHARACTERS.ONE.ID}`).click()
@@ -153,6 +161,7 @@ describe('Calculator tests', () => {
     cy.get(`#${CALCULATOR_CHARACTERS.SEVEN.ID}`).click()
     cy.get(`#${CALCULATOR_CHARACTERS.EQUALS.ID}`).click()
     cy.get(`#${ELEMENT_IDS.DISPLAY}`).should('have.text', '35')
+    cy.get(`#${CALCULATOR_CHARACTERS.CLEAR.ID}`).click()
 
     // 5 * - 5 = -25
     cy.get(`#${CALCULATOR_CHARACTERS.FIVE.ID}`).click()
