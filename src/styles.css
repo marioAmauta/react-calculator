@@ -12,7 +12,6 @@ html {
 
 body {
   font-family: sans-serif;
-  background: linear-gradient(to right, #00aaff, #00ff6c);
 }
 
 #root {
@@ -20,18 +19,27 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100svh;
+  padding: 0.5rem;
+  background-color: lightgray;
 }
 
 .calculator-grid {
   display: grid;
-  grid-template-columns: repeat(4, 6rem);
-  grid-template-rows: minmax(7rem, auto) repeat(5, 6rem);
+  grid-template-columns: repeat(4, minmax(25%, 1fr));
+  grid-template-rows: minmax(auto, 10rem) repeat(5, minmax(auto, 6rem));
+  height: 100%;
+  max-height: 700px;
+  width: 100%;
+  max-width: 450px;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 2px solid gray;
 }
 
 .calculator-grid > button {
   cursor: pointer;
   font-size: 2rem;
-  border: 1px solid white;
+  border: 1px solid lightgray;
   outline: none;
   background-color: rgba(255, 255, 255, 0.75);
 }
@@ -52,7 +60,7 @@ body {
   flex-direction: column;
   align-items: flex-end;
   justify-content: space-around;
-  padding: 0.75rem;
+  padding: 1rem;
   word-wrap: break-word;
   word-break: break-all;
 }
